@@ -1,0 +1,57 @@
+{
+  "name": "yufka",
+  "version": "1.0.0",
+  "description": "Transform JavaScript ASTs the easy way",
+  "keywords": [
+    "ast",
+    "falafel",
+    "burrito",
+    "source",
+    "syntax",
+    "traversal",
+    "tree"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Loilo/yufka.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Florian Reuschel",
+    "email": "florian@loilo.de",
+    "url": "https://loilo.de"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/cjs/yufka.common.js",
+  "module": "dist/esm/yufka.esm.js",
+  "scripts": {
+    "build": "concurrently -p '[{name}]' -n 'ESM,CJS' -c 'bgBlue.black,bgGreen.black' 'tsc -p build/tsconfig.esm.json' 'tsc -p build/tsconfig.cjs.json'",
+    "lint-tests": "tslint -c tslint.yml -t stylish 'test/**/*.js'",
+    "lint-source": "tslint -c tslint.yml -t stylish 'src/**/*.ts'",
+    "lint": "concurrently -p '[{name}]' -n 'SOURCE,TESTS' -c 'bgCyan.black,bgMagenta.black' 'npm run lint-source' 'npm run lint-tests'",
+    "jest": "jest",
+    "test": "npm run lint && npm run build && npm run jest",
+    "prepublishOnly": "npm test"
+  },
+  "dependencies": {
+    "acorn": "^6.1.1",
+    "magic-string": "^0.25.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.13.7",
+    "acorn-jsx": "^5.0.1",
+    "concurrently": "^4.1.0",
+    "jest": "^24.7.1",
+    "prettier": "^1.17.0",
+    "tslint": "^5.16.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.4.5"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  }
+}
