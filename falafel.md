@@ -40,7 +40,7 @@ For namespacing reasons, the `source()`, `parent` and `update()` properties are 
 
 ### Options Structure
 
-While Falafel only accepted acorn options plus a `parser` option, it seems reasonable to put all of that into a large dictionary object.
+Since Falafel only accepted acorn options plus a `parser` option, it seems reasonable to put all of that into a large dictionary object.
 
 However, Yufka's options have a little more variety, therefore all the acorn options migrated to their own namespace in `options.acorn`.
 
