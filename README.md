@@ -215,24 +215,7 @@ Output:
 const content = "<!doctype html>\n<html>\n[...]\n</html>"
 ```
 
-> **Note:** You *have* to return a promise if you want to commit updates asynchronously. Once the manipulator function is done running, any `update()` calls originating from it will throw an error:
->
-```js
-const deferredResult = yufka('x + 1', async (node, { source, update }) => {
-  if (node.type === 'CallExpression' && node.callee.name === 'curl') {
-    // Replace all cUrl calls with their actual content
-
-    // Get the URL (will only work for simple string literals)
-    const url = node.arguments[0].value
-
-    // Fetch the URL's contents
-    const contents = (await got(url)).body
-
-    // Replace the cUrl() call with the fetched contents
-    update(JSON.stringify(contents))
-  }
-})
-```
+> **Note:** You *have* to return a promise if you want to commit updates asynchronously. Once the manipulator function is done running, any `update()` calls originating from it will throw an error.
 
 ## Credit
 * While the source code of this package has virtually nothing left from the [Falafel](https://www.npmjs.com/package/falafel) codebase, Yufka actually started out as a fork and its concepts stem from there.
