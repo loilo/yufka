@@ -44,7 +44,7 @@
     "@types/node": "^11.13.7",
     "acorn-jsx": "^5.0.1",
     "concurrently": "^4.1.0",
-    "jest": "^24.7.1",
+    "jest": "^26.0.1",
     "prettier": "^2.0.5",
     "tslint": "^6.1.2",
     "tslint-config-prettier": "^1.18.0",
