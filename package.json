@@ -38,7 +38,7 @@
     "prepublishOnly": "npm test"
   },
   "dependencies": {
-    "acorn": "^7.2.0",
+    "acorn": "^8.0.1",
     "magic-string": "^0.25.2"
   },
   "devDependencies": {
