@@ -7,7 +7,7 @@
 
 Transform JavaScript [AST](http://en.wikipedia.org/wiki/Abstract_syntax_tree)s the easy way.
 
-[![Travis](https://badgen.net/travis/Loilo/yufka?label=build)](https://travis-ci.org/Loilo/yufka)
+[![Tests](https://badgen.net/github/checks/loilo/yufka/master)](https://github.com/loilo/yufka/actions)
 [![npm](https://badgen.net/npm/v/yufka)](https://npmjs.com/package/yufka)
 
 Yufka aims to be the unofficial successor to [Falafel](https://www.npmjs.com/package/falafel) and fixes most of its [outstanding issues](falafel.md#resolved-issues).
