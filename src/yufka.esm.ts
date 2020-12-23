@@ -158,10 +158,15 @@ function yufka<T>(...yufkaArgs: any[]): any {
     )
   }
 
+  const acornOptions: acorn.Options = {
+    ecmaVersion: 'latest',
+    ...(options.acorn ?? {})
+  }
+
   // Use `parser` option as parser if available
   const rootNode = options.parser
-    ? options.parser.parse(source, options.acorn)
-    : acornDefaultParse(source, options.acorn)
+    ? options.parser.parse(source, acornOptions)
+    : acornDefaultParse(source, acornOptions)
 
   // Create the resource all manipulations are performed on
   const magicString = new MagicString(source)
