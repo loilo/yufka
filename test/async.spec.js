@@ -21,29 +21,33 @@ it('should correctly handle Promises returned from the manipulator', async () =>
 })
 
 it('should throw when update() is called after manipulator finished (sync)', async () => {
-  // tslint:disable-next-line:no-unused-expression
-  expect(
-    new Promise(resolve => {
-      setTimeout(resolve, 20)
+  expect.hasAssertions()
 
-      yufka('false', (_, { update }) => {
-        setTimeout(() => {
-          update('true')
-        }, 10)
-      })
-    })
-  ).rejects
-})
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 20)
 
-it('should throw when update() is called after manipulator finished (async)', () => {
-  // tslint:disable-next-line:no-unused-expression
-  expect(
     yufka('false', (_, { update }) => {
       setTimeout(() => {
-        update('true')
-      }, 20)
-
-      return Promise.resolve()
+        expect(() => {
+          update('true')
+        }).toThrowError()
+      }, 10)
     })
-  ).rejects
+  })
+})
+
+it('should throw when update() is called after manipulator finished (async)', async () => {
+  expect.hasAssertions()
+
+  await yufka('false', (_, { update }) => {
+    setTimeout(() => {
+      expect(() => {
+        update('true')
+      }).toThrowError()
+    }, 10)
+
+    return Promise.resolve()
+  })
+
+  await new Promise(resolve => setTimeout(resolve, 20))
 })
