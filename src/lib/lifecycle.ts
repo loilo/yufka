@@ -3,55 +3,29 @@
  * in the lifecycle of a yufka() call
  */
 
-import { Node } from 'acorn'
-import { Context, SyncResult } from '../yufka.esm'
-import { NodeMetadata, nodeMetadataStore } from './metadata'
+import type { Node } from 'acorn'
+import type { Context, SyncResult } from '../yufka.esm'
+import { nodeMetadataStore, finishedNodes, checkNode } from './metadata'
+import * as helpers from './helpers'
 import { isNode, isPromise, Maybe } from './util'
 
-/**
- * Generate metadata for a node
- *
- * @param node    The node to generate metadata for
- * @param parent  The parent of the `node`
- * @param context The yufka() context
- */
-export function generateNodeMetadata<T>(
+type Helpers = typeof helpers
+type Helper = Helpers[keyof Helpers]
+
+// May or may not receive the `node` parameter
+type VariadicHelper<T extends (...args: any[]) => any> = T extends (
   node: Node,
-  parent: Maybe<Node>,
-  { magicString }: Context<T>
-): NodeMetadata {
-  const nodeMetadata = {
-    parent(levels: number = 1) {
-      // No matter how many levels to climb, no parent means undefined
-      if (!parent) {
-        return undefined
-      }
-
-      // No levels to go up, return current parent
-      if (levels <= 1) {
-        return parent
-      }
-
-      // Recursively get parent node when levels are remaining
-      return nodeMetadataStore.get(parent)!.parent(levels - 1)
-    },
-    source() {
-      return magicString.slice(node.start, node.end).toString()
-    },
-    update(replacement: string) {
-      magicString.overwrite(node.start, node.end, replacement)
-    }
-  }
-
-  return nodeMetadata
-}
+  ...args: infer U
+) => infer R
+  ? T | ((...args: U) => R)
+  : never
 
 /**
  * Collect the child AST nodes of a node
  *
  * @param node The node to search for child nodes
  */
-export function getChildNodes(node: Node) {
+export function collectChildNodes(node: Node) {
   const childNodes: Node[] = []
 
   // Walk all AST node properties, performing a recursive `walk`
@@ -116,15 +90,36 @@ export function performSuccessiveRecursiveWalks<T>(
  * @param context The yufka() context
  */
 export function collectTreeMetadata<T>(node: Node, context: Context<T>) {
-  const childNodes = getChildNodes(node)
+  const childNodes = collectChildNodes(node)
 
   for (const childNode of childNodes) {
-    nodeMetadataStore.set(
-      childNode,
-      generateNodeMetadata(childNode, node, context)
-    )
+    nodeMetadataStore.set(childNode, { parent: node, context })
 
     collectTreeMetadata(childNode, context)
+  }
+}
+
+/**
+ * Create a function that handles any of the NodeMetadata methods,
+ * taking into account a node as an optional first parameter.
+ *
+ * @param node   The node to bind to the helper method
+ * @param helper The the helper function to invoke
+ */
+function createNodeHelper<U extends Helper>(node: Node, helper: U) {
+  return (...args: Parameters<VariadicHelper<U>>) => {
+    // We need to annihilate typing because TS is just not clever enough
+    const untypedHelper = helper as any
+
+    if (isNode(args[0])) {
+      checkNode(args[0])
+
+      // If first argument is not a node, grab its metadata from
+      // the store and execute the according method on that
+      return untypedHelper(...args)
+    } else {
+      return untypedHelper(node, ...args)
+    }
   }
 }
 
@@ -135,79 +130,41 @@ export function collectTreeMetadata<T>(node: Node, context: Context<T>) {
  * @param context The yufka() context
  */
 export function handleNode<T>(node: Node, context: Context<T>) {
-  // Store meta information for node
-  const nodeMetadata = nodeMetadataStore.get(node)!
-
   // Get subwalks to perform
-  const childNodes = getChildNodes(node)
+  const childNodes = collectChildNodes(node)
   const subwalksResult = performSuccessiveRecursiveWalks(
     node,
     childNodes,
     context
   )
 
-  // This flag ensures that any of the NodeMetadata methods throws an error
-  // when called after the manipulator has finished (e.g. through setTimeout())
-  let manipulatorFinished = false
-
-  /**
-   * Create a function that handles any of the NodeMetadata methods,
-   * taking into account a node as an optional first parameter.
-   *
-   * @param key The NodeMetadata method to invoke
-   */
-  function createMetadataMethodHandler<
-    U extends 'source' | 'parent' | 'update'
-  >(key: U) {
-    return (...args: any[]) => {
-      if (manipulatorFinished) {
-        throw new Error(
-          `Cannot run ${key}() after manipulator callback has finished running`
-        )
-      }
-
-      if (isNode(args[0])) {
-        // If first argument is not a node, grab its metadata from
-        // the store and execute the according method on that
-        const [targetNode, ...remaining] = args
-        const method = nodeMetadataStore.get(targetNode)![key] as any
-        return method(...remaining)
-      } else {
-        // If first argument is not a node, execute the
-        // according method on the current node metadata
-        const method = nodeMetadata[key] as any
-        return method(...args)
-      }
-    }
-  }
-
   // Create the manipulation helpers object
-  const helpers = {
-    source: createMetadataMethodHandler('source'),
-    parent: createMetadataMethodHandler('parent'),
-    update: createMetadataMethodHandler('update')
+  const nodeHelpers = {
+    source: createNodeHelper(node, helpers.source),
+    parent: createNodeHelper(node, helpers.parent),
+    update: createNodeHelper(node, helpers.update)
   }
 
   // Call manipulator function on AST node
   if (isPromise(subwalksResult)) {
     return subwalksResult
       .then(() => {
-        return context.manipulator(node, helpers)
+        return context.manipulator(node, nodeHelpers)
       })
       .then(manipulatorResult => {
-        manipulatorFinished = true
+        finishedNodes.add(node)
         return manipulatorResult
       })
   } else {
-    const manipulatorResult = context.manipulator(node, helpers)
+    const manipulatorResult = context.manipulator(node, nodeHelpers)
 
     if (isPromise(manipulatorResult)) {
       return manipulatorResult.then(result => {
-        manipulatorFinished = true
+        finishedNodes.add(node)
         return result
       })
     } else {
-      manipulatorFinished = true
+      finishedNodes.add(node)
       return manipulatorResult
     }
   }
@@ -227,8 +184,6 @@ export function createResult<T>({
   return Object.freeze({
     code,
     map: magicString.generateMap(options.sourceMap),
-    toString() {
-      return code
-    }
+    toString: () => code
   })
 }

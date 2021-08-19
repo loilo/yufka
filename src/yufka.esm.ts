@@ -5,12 +5,8 @@ import {
   Parser
 } from 'acorn'
 import MagicString, { SourceMap, SourceMapOptions } from 'magic-string'
-import {
-  collectTreeMetadata,
-  createResult,
-  generateNodeMetadata,
-  handleNode
-} from './lib/lifecycle'
+import { collectTreeMetadata, createResult, handleNode } from './lib/lifecycle'
+import * as helpers from './lib/helpers'
 import { nodeMetadataStore } from './lib/metadata'
 import { isPromise, Maybe } from './lib/util'
 
@@ -176,10 +172,7 @@ function yufka<T>(...yufkaArgs: any[]): any {
 
   // Preparation: collect metadata of the whole AST
   // Allows to modify nodes that have not been visited yet
-  nodeMetadataStore.set(
-    rootNode,
-    generateNodeMetadata(rootNode, undefined, context)
-  )
+  nodeMetadataStore.set(rootNode, { parent: undefined, context })
 
   collectTreeMetadata(rootNode, context)
 
@@ -193,5 +186,9 @@ function yufka<T>(...yufkaArgs: any[]): any {
     return createResult(context)
   }
 }
+
+yufka.source = helpers.source
+yufka.parent = helpers.parent
+yufka.update = helpers.update
 
 export default yufka

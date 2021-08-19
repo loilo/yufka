@@ -1,3 +1,5 @@
+import type { Node } from 'acorn'
+
 /**
  * Utilities that are completely independent of how Yufka works
  */
@@ -25,7 +27,7 @@ export function isPromise<T = any>(value: any): value is Promise<T> {
  *
  * @param value The value to check
  */
-export function isNode(value: any): boolean {
+export function isNode(value: any): value is Node {
   return (
     typeof value === 'object' &&
     value !== null &&

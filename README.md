@@ -181,6 +181,29 @@ yufka('x = [1]', (node, { parent }) => {
 })
 ```
 
+#### External Helper Access
+
+**Tip:** If you want to extract manipulation behavior into standalone functions, you can access the helpers directly on the `yufka` instance (e.g. `yufka.source()`) where they are not bound to a specific node:
+
+```js
+// Standalone function, increments node's value if it's a number
+const increment = node => {
+  if (node.type === 'Literal' && typeof node.value === 'number') {
+    yufka.update(node, String(node.value + 1))
+  }
+}
+
+const result = yufka('x = 1', node => {
+  increment(node)
+})
+
+console.log(result.toString())
+```
+Output:
+```js
+x = 2
+```
+
 ### Asynchronous Manipulations
 The `manipulator` function may return a [Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). If it does, Yufka will wait for that to resolve, making the whole `yufka()` function return a Promise resolving to the result object (instead of returning the result object directly):
 

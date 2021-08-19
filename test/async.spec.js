@@ -36,7 +36,7 @@ it('should throw when update() is called after manipulator finished (sync)', asy
   })
 })
 
-it('should throw when update() is called after manipulator finished (async)', async () => {
+it("should throw when update() is called after iterated node's manipulator finished (async)", async () => {
   expect.hasAssertions()
 
   await yufka('false', (_, { update }) => {
@@ -50,4 +50,16 @@ it('should throw when update() is called after manipulator finished (async)', as
   })
 
   await new Promise(resolve => setTimeout(resolve, 20))
+})
+
+it("should throw when update() is called after target node's manipulator finished", () => {
+  expect.hasAssertions()
+
+  yufka('false', (node, { update }) => {
+    if (node.type === 'ExpressionStatement') {
+      expect(() => {
+        update(node.expression, 'true')
+      }).toThrowError()
+    }
+  })
 })
