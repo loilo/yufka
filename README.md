@@ -66,7 +66,7 @@ function yufka(source, options = {}, manipulator)
 Transform the string `source` with the function `manipulator`, returning an output object.
 
 For every node in the AST, `manipulator(node, helpers)` fires. The recursive walk is an
-in-order traversal, so children get called before their parents. This makes it easier to write nested transforms since transforming parents often requires transforming its children first anyway.
+in-order traversal, so children get called before their parents. This makes it easier to write nested transforms since transforming parents often requires transforming their children first anyway.
 
 The `yufka()` return value is an object with two properties:
 * `code` – contains the transformed source code
@@ -75,7 +75,7 @@ The `yufka()` return value is an object with two properties:
 Calling `.toString()` on a Yufka result object will return its source `code`.
 
 > **Pro Tip:**
-> Don't know how a JavaScript AST looks like? Have a look at [astexplorer.com](https://astexplorer.net/) to get an idea.
+> Don't know how a JavaScript AST looks like? Have a look at [astexplorer.net](https://astexplorer.net/) to get an idea.
 
 ### Options
 All options are, as the name says, optional. If you want to provide an options object, its place is between the `source` code and the `manipulator` function.
@@ -131,6 +131,7 @@ However, all of these methods take an AST node as an optional first parameter if
 >   }
 > })
 > ```
+
 
 #### `source()`
 Return the source code for the given node, including any modifications made to
