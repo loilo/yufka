@@ -1,6 +1,6 @@
 {
   "name": "yufka",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Transform JavaScript ASTs the easy way",
   "keywords": [
     "ast",
