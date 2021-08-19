@@ -10,7 +10,8 @@ import * as helpers from './helpers'
 import { isNode, isPromise, Maybe } from './util'
 
 type Helpers = typeof helpers
-type Helper = Helpers[keyof Helpers]
+type HelperName = keyof Helpers
+type Helper = Helpers[HelperName]
 
 // May or may not receive the `node` parameter
 type VariadicHelper<T extends (...args: any[]) => any> = T extends (
@@ -103,22 +104,24 @@ export function collectTreeMetadata<T>(node: Node, context: Context<T>) {
  * Create a function that handles any of the NodeMetadata methods,
  * taking into account a node as an optional first parameter.
  *
- * @param node   The node to bind to the helper method
- * @param helper The the helper function to invoke
+ * @param node       The node to bind to the helper method
+ * @param helperName The the helper function to invoke
  */
-function createNodeHelper<U extends Helper>(node: Node, helper: U) {
-  return (...args: Parameters<VariadicHelper<U>>) => {
+function createNodeHelper<U extends HelperName>(node: Node, helperName: U) {
+  return (...args: Parameters<VariadicHelper<Helpers[U]>>) => {
     // We need to annihilate typing because TS is just not clever enough
-    const untypedHelper = helper as any
+    const helper = helpers[helperName] as any
 
     if (isNode(args[0])) {
-      checkNode(args[0])
+      if (helperName === 'update') {
+        checkNode(args[0])
+      }
 
       // If first argument is not a node, grab its metadata from
       // the store and execute the according method on that
-      return untypedHelper(...args)
+      return helper(...args)
     } else {
-      return untypedHelper(node, ...args)
+      return helper(node, ...args)
     }
   }
 }
@@ -140,9 +143,9 @@ export function handleNode<T>(node: Node, context: Context<T>) {
 
   // Create the manipulation helpers object
   const nodeHelpers = {
-    source: createNodeHelper(node, helpers.source),
-    parent: createNodeHelper(node, helpers.parent),
-    update: createNodeHelper(node, helpers.update)
+    source: createNodeHelper(node, 'source'),
+    parent: createNodeHelper(node, 'parent'),
+    update: createNodeHelper(node, 'update')
   }
 
   // Call manipulator function on AST node

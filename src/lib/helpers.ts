@@ -13,8 +13,6 @@ import { nodeMetadataStore, checkNode } from './metadata'
  *
  */
 export function source(node: Node) {
-  checkNode(node)
-
   const { context } = nodeMetadataStore.get(node)!
 
   return context.magicString.slice(node.start, node.end).toString()
@@ -28,8 +26,6 @@ export function source(node: Node) {
  *
  */
 export function parent(node: Node, levels: number = 1): Maybe<Node> {
-  checkNode(node)
-
   const { parent: parentNode } = nodeMetadataStore.get(node)!
 
   // No matter how many levels to climb, no parent means undefined
