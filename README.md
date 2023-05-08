@@ -107,10 +107,6 @@ yufka(source, { parser }, (node, helpers) => {
 Yufka uses [`magic-string`](https://www.npmjs.com/package/magic-string) under the hood to generate [source maps](https://developer.mozilla.org/docs/Tools/Debugger/How_to/Use_a_source_map) for your code modifications. You can pass its [source map options](https://www.npmjs.com/package/magic-string#sgeneratemap-options-) as `options.sourceMap`:
 
 ```js
-const acorn = require('acorn')
-const jsx = require('acorn-jsx')
-const parser = acorn.Parser.extend(jsx())
-
 yufka(source, { sourceMap: { hires: true } }, (node, helpers) => {
   // Create a high-resolution source map
 })
