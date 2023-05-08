@@ -1,6 +1,6 @@
 <div align="center">
   <br>
-  <img src="https://cdn.jsdelivr.net/gh/loilo/yufka/yufka.svg" alt="A rolled-up Yufka with stuffing" width="135" height="129">
+  <img src="yufka.svg" alt="A rolled-up Yufka with stuffing" width="135" height="153">
   <br>
   <h1>Yufka</h1>
 </div>
@@ -242,5 +242,5 @@ const content = "<!doctype html>\n<html>\n[...]\n</html>"
 > **Note:** You *have* to return a promise if you want to commit updates asynchronously. Once the manipulator function is done running, any `update()` calls originating from it will throw an error.
 
 ## Credit
-* While the source code of this package has virtually nothing left from the [Falafel](https://www.npmjs.com/package/falafel) codebase, Yufka actually started out as a fork and its concepts stem from there.
-* Yufka's logo is based on [a graphic](https://github.com/twitter/twemoji/blob/1bbd06079e03b4069acc6f206f5500cd76a3256c/2/svg/1f32f.svg) from the [Twemoji Project](https://github.com/twitter/twemoji) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
+
+While the source code of this package has virtually nothing left from the [Falafel](https://www.npmjs.com/package/falafel) codebase, Yufka actually started out as a fork and its concepts stem from there.
