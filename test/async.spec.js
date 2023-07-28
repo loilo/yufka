@@ -23,7 +23,7 @@ it('should correctly handle Promises returned from the manipulator', async () =>
 it('should throw when update() is called after manipulator finished (sync)', async () => {
   expect.hasAssertions()
 
-  await new Promise((resolve, reject) => {
+  await new Promise(resolve => {
     setTimeout(resolve, 20)
 
     yufka('false', (_, { update }) => {

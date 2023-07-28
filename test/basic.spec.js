@@ -36,7 +36,7 @@ test('source() should return replaced content', () => {
 it('should allow for multiple overrides on the same node', () => {
   expect.assertions(1)
 
-  const result = yufka('x + y', (node, { source, update, parent }) => {
+  const result = yufka('x + y', (node, { update, parent }) => {
     if (node.type === 'Identifier') {
       if (node.name === 'x') {
         update(parent(node).right, 'z')

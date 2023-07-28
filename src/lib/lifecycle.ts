@@ -7,11 +7,10 @@ import type { Node } from 'acorn'
 import type { Context, SyncResult } from '../yufka.esm'
 import { nodeMetadataStore, finishedNodes, checkNode } from './metadata'
 import * as helpers from './helpers'
-import { isNode, isPromise, Maybe } from './util'
+import { isNode, isPromise } from './util'
 
 type Helpers = typeof helpers
 type HelperName = keyof Helpers
-type Helper = Helpers[HelperName]
 
 // May or may not receive the `node` parameter
 type VariadicHelper<T extends (...args: any[]) => any> = T extends (

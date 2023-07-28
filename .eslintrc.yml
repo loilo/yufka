@@ -1,0 +1,18 @@
+root: true
+parser: '@typescript-eslint/parser'
+plugins:
+  - '@typescript-eslint'
+  - jest
+extends:
+  - eslint:recommended
+  - plugin:@typescript-eslint/recommended
+  - prettier
+rules:
+  '@typescript-eslint/no-explicit-any': off
+  '@typescript-eslint/ban-ts-comment': off
+  '@typescript-eslint/no-non-null-assertion': off
+  '@typescript-eslint/no-empty-function': off
+  '@typescript-eslint/no-var-requires': off
+env:
+  'jest/globals': true
+  node: true

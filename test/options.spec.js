@@ -79,11 +79,11 @@ it('should create a high-resolution source map', () => {
   )
 
   expect(result.map).toEqual({
-    file: null,
+    file: undefined,
     mappings: 'AAAA,CAAC,CAAC,CAAC,CAAC',
     names: [],
-    sources: [null],
-    sourcesContent: [null],
+    sources: [''],
+    sourcesContent: undefined,
     version: 3
   })
 })
