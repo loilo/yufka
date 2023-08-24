@@ -10,6 +10,7 @@ updates:
   - dependency-name: "@types/node"
     versions:
     - 15.0.1
-  - update-types:
+  - dependency-name: '*'
+    update-types:
     - 'version-update:semver-patch'
     - 'version-update:semver-minor'
